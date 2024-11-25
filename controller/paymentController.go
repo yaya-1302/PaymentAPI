@@ -2,7 +2,6 @@ package controller
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/yaya-1302/PaymentAPI/model"
@@ -10,18 +9,27 @@ import (
 	"github.com/yaya-1302/PaymentAPI/utils"
 )
 
-func InitiatePaymentHandler(w http.ResponseWriter, r *http.Request) {
-	var paymentReq model.PaymentRequest
-
-	err := json.NewDecoder(r.Body).Decode(&paymentReq)
-	if err != nil {
-		utils.FailureResponse(w, http.StatusBadRequest, fmt.Sprintf("Invalid request body: %v", err))
+func PaymentController(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		utils.FailureResponse(w, http.StatusMethodNotAllowed, "Only POST method is allowed")
 		return
 	}
 
-	err = service.InitiatePayment(paymentReq.MerchantID, paymentReq.Amount)
+	var request model.PaymentRequest
+	err := json.NewDecoder(r.Body).Decode(&request)
 	if err != nil {
-		utils.FailureResponse(w, http.StatusBadRequest, fmt.Sprintf("Payment failed: %v", err))
+		utils.FailureResponse(w, http.StatusBadRequest, "Invalid JSON format")
+		return
+	}
+
+	if request.MerchantID == "" || request.Amount <= 0 {
+		utils.FailureResponse(w, http.StatusBadRequest, "Merchant ID and Amount must be provided and valid")
+		return
+	}
+
+	err = service.InitiatePayment(request.MerchantID, request.Amount)
+	if err != nil {
+		utils.FailureResponse(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 

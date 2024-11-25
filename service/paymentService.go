@@ -3,7 +3,9 @@ package service
 import (
 	"errors"
 	"fmt"
+	"time"
 
+	"github.com/google/uuid"
 	"github.com/yaya-1302/PaymentAPI/model"
 	"github.com/yaya-1302/PaymentAPI/repository"
 )
@@ -35,6 +37,11 @@ func InitiatePayment(merchantID string, amount float64) error {
 		return fmt.Errorf("failed to update merchant balance: %v", err)
 	}
 
+	err = addPaymentHistory(customer, amount)
+	if err != nil {
+		return fmt.Errorf("failed to add payment history: %v", err)
+	}
+
 	return nil
 }
 
@@ -61,4 +68,18 @@ func validateMerchant(merchantID string) (*model.Merchant, error) {
 	}
 
 	return nil, errors.New("merchant not found")
+}
+
+func addPaymentHistory(customer *model.Customer, amount float64) error {
+	historyID := uuid.New().String()
+
+	history := model.History{
+		ID:         historyID,
+		CustomerID: customer.ID,
+		Action:     "payment",
+		Amount:     amount,
+		Timestamp:  time.Now().Format(time.RFC3339),
+	}
+
+	return repository.AddHistory(history)
 }
