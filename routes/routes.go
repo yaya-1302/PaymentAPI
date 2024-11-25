@@ -9,4 +9,5 @@ import (
 func RegisteredRoutes() {
 	http.HandleFunc("/login", controller.LoginController)
 	http.HandleFunc("/logout", controller.LogoutController)
+	http.HandleFunc("/payment", controller.InitiatePaymentHandler)
 }
