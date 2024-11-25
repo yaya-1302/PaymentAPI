@@ -8,7 +8,7 @@ import (
 	"github.com/yaya-1302/PaymentAPI/utils"
 )
 
-func AuthController(w http.ResponseWriter, r *http.Request) {
+func LoginController(w http.ResponseWriter, r *http.Request) {
 	var requestData struct {
 		Username string `json:"username"`
 		Password string `json:"password"`
@@ -33,7 +33,7 @@ func AuthController(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func GetLoggedInCustomerHandler(w http.ResponseWriter, r *http.Request) {
+func GetLoggedInCustomerController(w http.ResponseWriter, r *http.Request) {
 	customer := service.GetLoggedInCustomer()
 	if customer == nil {
 		utils.FailureResponse(w, http.StatusUnauthorized, "No logged-in customer")
@@ -43,7 +43,7 @@ func GetLoggedInCustomerHandler(w http.ResponseWriter, r *http.Request) {
 	utils.SuccessResponse(w, "Logged-in customer retrieved", customer)
 }
 
-func LogoutHandler(w http.ResponseWriter, r *http.Request) {
+func LogoutController(w http.ResponseWriter, r *http.Request) {
 	err := service.Logout()
 	if err != nil {
 		utils.FailureResponse(w, http.StatusInternalServerError, "Error logging out")

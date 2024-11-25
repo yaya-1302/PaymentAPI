@@ -18,7 +18,7 @@ func GenerateJWT(username string) (string, error) {
 	claims := JWTClaims{
 		Username: username,
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)), // Token expires in 24 hours
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),
 			Issuer:    "merchant-bank-api",
 		},
 	}
